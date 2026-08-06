@@ -179,7 +179,7 @@ function Hotspots({
   return (
     <>
       {hotspots.map((h) => (
-        <Html key={h.id} position={h.position} center distanceFactor={11} zIndexRange={[20, 0]}>
+        <Html key={h.id} position={h.position} center distanceFactor={6} zIndexRange={[20, 0]}>
           <button
             onClick={() => onHotspot(active === h.id ? null : h.id)}
             className={`readout flex items-center gap-2 whitespace-nowrap rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] transition-colors ${
@@ -205,7 +205,7 @@ function Rig({
   focus: [number, number, number] | null;
 }) {
   const { camera } = useThree();
-  const target = useRef(new THREE.Vector3(0, 1.5, 6.2));
+  const target = useRef(new THREE.Vector3(-0.7, 1.15, 4.3));
   const pointer = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -222,9 +222,9 @@ function Rig({
   }, [immersive]);
 
   useEffect(() => {
-    if (immersive) target.current.set(0, 1.15, 2.4);
-    else if (focus) target.current.set(focus[0] * 2.2, focus[1] + 0.4, focus[2] + 3.1);
-    else target.current.set(0, 1.5, 6.2);
+    if (immersive) target.current.set(-0.5, 1.0, 2.1);
+    else if (focus) target.current.set(focus[0] * 2.2 - 0.6, focus[1] + 0.3, focus[2] + 2.4);
+    else target.current.set(-0.7, 1.15, 4.3);
   }, [immersive, focus]);
 
   useFrame(() => {
@@ -286,7 +286,7 @@ function Stage({ growth, immersive, activeHotspot, onHotspot }: SceneProps) {
           minDistance={2.2}
           maxDistance={9}
           maxPolarAngle={Math.PI * 0.52}
-          target={[0, 0.15, 0]}
+          target={[-0.7, 0.15, 0]}
           makeDefault
         />
       )}
@@ -325,7 +325,7 @@ export default function PaddyScene(props: SceneProps) {
     <div className="absolute inset-0">
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [0, 1.5, 6.2], fov: 40 }}
+        camera={{ position: [-0.7, 1.15, 4.3], fov: 42 }}
         onCreated={({ gl }) => {
           glRef.current = gl;
         }}

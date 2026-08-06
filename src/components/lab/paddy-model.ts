@@ -75,7 +75,7 @@ export function buildBlades(count: number, growth: number, seed = 7): BladeSpec[
     const r = rng();
     const outer = i / count;
     const length = (1.15 + r * 1.35) * (0.35 + 0.65 * growth);
-    const width = 0.019 + r * 0.016;
+    const width = 0.026 + r * 0.02;
     const curl = 0.12 + rng() * 0.5 + outer * 0.4;
     out.push({
       geometry: bladeGeometry(length, width, curl),
