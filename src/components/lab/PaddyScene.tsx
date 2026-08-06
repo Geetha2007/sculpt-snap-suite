@@ -205,7 +205,7 @@ function Rig({
   focus: [number, number, number] | null;
 }) {
   const { camera } = useThree();
-  const target = useRef(new THREE.Vector3(0, 1.15, 4.3));
+  const target = useRef(new THREE.Vector3(0, 1.15, 3.8));
   const pointer = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -224,7 +224,7 @@ function Rig({
   useEffect(() => {
     if (immersive) target.current.set(0, 1.0, 2.1);
     else if (focus) target.current.set(focus[0] * 2.2, focus[1] + 0.3, focus[2] + 2.4);
-    else target.current.set(0, 1.15, 4.3);
+    else target.current.set(0, 1.15, 3.8);
   }, [immersive, focus]);
 
   useFrame(() => {
@@ -325,7 +325,7 @@ export default function PaddyScene(props: SceneProps) {
     <div className="absolute inset-0">
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [0, 1.15, 4.3], fov: 42 }}
+        camera={{ position: [0, 1.15, 3.8], fov: 42 }}
         onCreated={({ gl }) => {
           glRef.current = gl;
         }}
