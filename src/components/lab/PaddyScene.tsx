@@ -159,7 +159,7 @@ function Backdrop() {
   return (
     <mesh position={[0, 2.1, -5.6]}>
       <planeGeometry args={[8.5, 4.78]} />
-      <meshBasicMaterial map={texture} transparent opacity={0.07} depthWrite={false} />
+      <meshBasicMaterial map={texture} transparent opacity={0.035} depthWrite={false} />
     </mesh>
   );
 }
@@ -205,7 +205,7 @@ function Rig({
   focus: [number, number, number] | null;
 }) {
   const { camera } = useThree();
-  const target = useRef(new THREE.Vector3(0, 1.15, 3.8));
+  const target = useRef(new THREE.Vector3(0, 1.3, 3.9));
   const pointer = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -224,7 +224,7 @@ function Rig({
   useEffect(() => {
     if (immersive) target.current.set(0, 1.0, 2.1);
     else if (focus) target.current.set(focus[0] * 2.2, focus[1] + 0.3, focus[2] + 2.4);
-    else target.current.set(0, 1.15, 3.8);
+    else target.current.set(0, 1.3, 3.9);
   }, [immersive, focus]);
 
   useFrame(() => {
@@ -260,7 +260,7 @@ function Stage({ growth, immersive, activeHotspot, onHotspot }: SceneProps) {
       <Backdrop />
       <Dust />
 
-      <group position={[-1.05, -1.15, 0]}>
+      <group position={[-0.5, -1.05, 0]}>
         <Culms growth={growth} />
         <Blades growth={growth} />
         <Panicles growth={growth} />
@@ -325,7 +325,7 @@ export default function PaddyScene(props: SceneProps) {
     <div className="absolute inset-0">
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [0, 1.15, 3.8], fov: 42 }}
+        camera={{ position: [0, 1.3, 3.9], fov: 42 }}
         onCreated={({ gl }) => {
           glRef.current = gl;
         }}
