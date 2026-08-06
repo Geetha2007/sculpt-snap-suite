@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CropsIndexRouteImport } from './routes/crops.index'
+import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CropsIndexRoute = CropsIndexRouteImport.update({
+  id: '/crops/',
+  path: '/crops/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CropsSlugRoute = CropsSlugRouteImport.update({
+  id: '/crops/$slug',
+  path: '/crops/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/crops/$slug': typeof CropsSlugRoute
+  '/crops/': typeof CropsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/crops/$slug': typeof CropsSlugRoute
+  '/crops': typeof CropsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/crops/$slug': typeof CropsSlugRoute
+  '/crops/': typeof CropsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/crops/$slug' | '/crops/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/crops/$slug' | '/crops'
+  id: '__root__' | '/' | '/crops/$slug' | '/crops/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CropsSlugRoute: typeof CropsSlugRoute
+  CropsIndexRoute: typeof CropsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +68,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/crops/': {
+      id: '/crops/'
+      path: '/crops'
+      fullPath: '/crops/'
+      preLoaderRoute: typeof CropsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crops/$slug': {
+      id: '/crops/$slug'
+      path: '/crops/$slug'
+      fullPath: '/crops/$slug'
+      preLoaderRoute: typeof CropsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CropsSlugRoute: CropsSlugRoute,
+  CropsIndexRoute: CropsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
