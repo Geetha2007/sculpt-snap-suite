@@ -1,5 +1,5 @@
 import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { Dna, Droplets, Expand, Layers, Minimize, Timer } from "lucide-react";
 
@@ -60,6 +60,12 @@ function Lab() {
   const [layer, setLayer] = useState<string | null>(null);
   const [stage, setStage] = useState(crop.lifecycle.length - 1);
   const [immersive, setImmersive] = useState(false);
+
+  useEffect(() => {
+    setStage(crop.lifecycle.length - 1);
+    setHotspot(null);
+    setLayer(null);
+  }, [crop.slug, crop.lifecycle.length]);
 
   const growth = crop.lifecycle[stage]?.growth ?? 1;
   const activeHotspot = crop.hotspots.find((h) => h.id === hotspot);
