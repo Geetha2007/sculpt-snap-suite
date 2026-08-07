@@ -1,7 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { Pause, Play, RotateCcw, X } from "lucide-react";
 
 import type { Crop } from "@/lib/crops";
 
@@ -149,8 +149,46 @@ export function LifecyclePanel({
   onClose: () => void;
 }) {
   const current = crop.lifecycle[stage];
+  const last = crop.lifecycle.length - 1;
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setInterval(() => {
+      onStage(stage >= last ? last : stage + 1);
+      if (stage >= last) setPlaying(false);
+    }, 1400);
+    return () => clearInterval(t);
+  }, [playing, stage, last, onStage]);
+
   return (
-    <PanelShell title="Lifecycle timeline" subtitle="Scrub to grow the model" onClose={onClose}>
+    <PanelShell
+      title="Lifecycle timeline"
+      subtitle={`Stage ${stage + 1} of ${last + 1} · ${crop.lifecycle[0]?.name} → ${crop.lifecycle[last]?.name}`}
+      onClose={onClose}
+    >
+      <div className="mb-4 flex items-center gap-2">
+        <button
+          onClick={() => {
+            if (stage >= last) onStage(0);
+            setPlaying((p) => !p);
+          }}
+          className="readout flex items-center gap-2 rounded-sm border border-primary/50 px-3 py-2 text-[10px] uppercase text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+        >
+          {playing ? <Pause className="size-3" /> : <Play className="size-3" />}
+          {playing ? "Pause growth" : "Grow start → end"}
+        </button>
+        <button
+          onClick={() => {
+            setPlaying(false);
+            onStage(0);
+          }}
+          aria-label="Reset to first stage"
+          className="flex size-9 items-center justify-center rounded-sm border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          <RotateCcw className="size-3.5" />
+        </button>
+      </div>
       <input
         type="range"
         min={0}
@@ -161,22 +199,43 @@ export function LifecyclePanel({
         aria-label="Lifecycle stage"
         className="w-full accent-[var(--primary)]"
       />
-      <div className="mt-3 flex justify-between">
-        {crop.lifecycle.map((s, i) => (
-          <button
-            key={s.id}
-            onClick={() => onStage(i)}
-            className={`readout text-[9px] uppercase transition-colors ${
-              i === stage ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      <ol className="mt-4 space-y-1">
+        {crop.lifecycle.map((s, i) => {
+          const active = i === stage;
+          return (
+            <li key={s.id}>
+              <button
+                onClick={() => {
+                  setPlaying(false);
+                  onStage(i);
+                }}
+                className={`flex w-full items-baseline gap-3 rounded-sm border px-3 py-2 text-left transition-colors ${
+                  active
+                    ? "border-primary/60 bg-primary/10"
+                    : i < stage
+                      ? "border-border/60 text-muted-foreground hover:border-primary/40"
+                      : "border-transparent text-muted-foreground hover:border-border"
+                }`}
+              >
+                <span
+                  className={`readout text-[9px] uppercase ${active ? "text-primary" : "text-muted-foreground"}`}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className={`flex-1 text-sm ${active ? "font-semibold text-foreground" : ""}`}>
+                  {s.name}
+                </span>
+                <span className="readout text-[9px] uppercase text-muted-foreground">{s.days}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
       {current && (
-        <div className="mt-5 rounded-sm border border-border bg-secondary/40 p-4">
-          <p className="readout text-[10px] uppercase text-grain">{current.days}</p>
+        <div className="mt-4 rounded-sm border border-border bg-secondary/40 p-4">
+          <p className="readout text-[10px] uppercase text-grain">
+            {current.days} · {Math.round(current.growth * 100)}% grown
+          </p>
           <h3 className="mt-1 text-base font-semibold">{current.name}</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{current.note}</p>
         </div>
