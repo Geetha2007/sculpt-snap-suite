@@ -35,7 +35,7 @@ function CropDetail() {
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-6 py-14">
         <Link
-          to="/crops"
+          to="/"
           className="readout text-[10px] uppercase text-muted-foreground transition-colors hover:text-primary"
         >
           ← Crop shelf
@@ -51,7 +51,7 @@ function CropDetail() {
 
         {crop.modeled ? (
           <Link
-            to="/"
+            to="/lab"
             className="readout mt-7 inline-flex rounded-sm border border-primary/50 px-4 py-2.5 text-[10px] uppercase text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
           >
             Open in the 3D lab

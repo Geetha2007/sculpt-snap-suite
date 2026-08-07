@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CropsIndexRouteImport } from './routes/crops.index'
+import { Route as LabRouteImport } from './routes/lab'
 import { Route as CropsSlugRouteImport } from './routes/crops.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +18,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CropsIndexRoute = CropsIndexRouteImport.update({
-  id: '/crops/',
-  path: '/crops/',
+const LabRoute = LabRouteImport.update({
+  id: '/lab',
+  path: '/lab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CropsSlugRoute = CropsSlugRouteImport.update({
@@ -31,32 +31,32 @@ const CropsSlugRoute = CropsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/lab': typeof LabRoute
   '/crops/$slug': typeof CropsSlugRoute
-  '/crops/': typeof CropsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/lab': typeof LabRoute
   '/crops/$slug': typeof CropsSlugRoute
-  '/crops': typeof CropsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/lab': typeof LabRoute
   '/crops/$slug': typeof CropsSlugRoute
-  '/crops/': typeof CropsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/crops/$slug' | '/crops/'
+  fullPaths: '/' | '/lab' | '/crops/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/crops/$slug' | '/crops'
-  id: '__root__' | '/' | '/crops/$slug' | '/crops/'
+  to: '/' | '/lab' | '/crops/$slug'
+  id: '__root__' | '/' | '/lab' | '/crops/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LabRoute: typeof LabRoute
   CropsSlugRoute: typeof CropsSlugRoute
-  CropsIndexRoute: typeof CropsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -68,11 +68,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/crops/': {
-      id: '/crops/'
-      path: '/crops'
-      fullPath: '/crops/'
-      preLoaderRoute: typeof CropsIndexRouteImport
+    '/lab': {
+      id: '/lab'
+      path: '/lab'
+      fullPath: '/lab'
+      preLoaderRoute: typeof LabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/crops/$slug': {
@@ -87,8 +87,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LabRoute: LabRoute,
   CropsSlugRoute: CropsSlugRoute,
-  CropsIndexRoute: CropsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

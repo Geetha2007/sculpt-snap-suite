@@ -14,7 +14,7 @@ import {
 
 const PaddyScene = lazy(() => import("@/components/lab/PaddyScene"));
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/lab")({
   head: () => ({
     meta: [
       { title: "3D Agriculture Lab — Interactive Paddy Rice Model" },
