@@ -114,6 +114,11 @@ function Lab() {
                 </span>
               </h1>
               <p className="mt-1 max-w-md text-sm text-muted-foreground">{crop.tagline}</p>
+              {!crop.modeled && (
+                <p className="readout mt-2 inline-flex rounded-sm border border-grain/40 px-2 py-1 text-[10px] uppercase text-grain">
+                  Reference geometry — dedicated model in progress
+                </p>
+              )}
             </div>
             <nav className="pointer-events-auto flex items-center gap-2">
               <Link
