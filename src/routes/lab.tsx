@@ -105,7 +105,7 @@ function Lab() {
             </div>
             <nav className="pointer-events-auto flex items-center gap-2">
               <Link
-                to="/lab"
+                to="/"
                 className="readout rounded-sm border border-border px-3 py-2 text-[10px] uppercase text-muted-foreground transition-colors hover:border-primary hover:text-primary"
               >
                 Crop shelf
