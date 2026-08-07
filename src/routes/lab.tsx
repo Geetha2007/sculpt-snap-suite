@@ -16,25 +16,25 @@ const PaddyScene = lazy(() => import("@/components/lab/PaddyScene"));
 
 export const Route = createFileRoute("/lab")({
   validateSearch: (search: Record<string, unknown>): { crop?: string } => {
-    const slug = typeof search.crop === "string" ? search.crop : undefined;
+    const raw = search["crop"];
+    const slug = typeof raw === "string" ? raw : undefined;
     return slug && getCrop(slug) ? { crop: slug } : {};
   },
-  head: () => ({
-    meta: [
-      { title: "3D Agriculture Lab — Interactive Paddy Rice Model" },
-      {
-        name: "description",
-        content:
-          "Explore a real-time 3D model of Oryza sativa: taxonomy, growing conditions, leaf cell structure and a scrubbable lifecycle, in an immersive dark lab.",
-      },
-      { property: "og:title", content: "3D Agriculture Lab — Interactive Paddy Rice Model" },
-      {
-        property: "og:description",
-        content:
-          "Orbit a procedurally grown rice plant, open hotspots and scrub its lifecycle from germination to ripening.",
-      },
-    ],
-  }),
+  head: ({ match }) => {
+    const crop = getCrop(match.search.crop ?? "") ?? RICE;
+    const title = `${crop.name} in 3D — Agriculture Lab`;
+    const description = `Explore a real-time 3D specimen of ${crop.binomial}: taxonomy, growing conditions, leaf cell structure and a scrubbable lifecycle, in an immersive dark lab.`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+    };
+  },
   component: Lab,
 });
 
@@ -53,14 +53,16 @@ const HOTSPOT_PANEL: Record<string, PanelId> = {
 };
 
 function Lab() {
+  const { crop: slug } = Route.useSearch();
+  const crop = getCrop(slug ?? "") ?? RICE;
   const [panel, setPanel] = useState<PanelId | null>("taxonomy");
   const [hotspot, setHotspot] = useState<string | null>(null);
   const [layer, setLayer] = useState<string | null>(null);
-  const [stage, setStage] = useState(RICE.lifecycle.length - 1);
+  const [stage, setStage] = useState(crop.lifecycle.length - 1);
   const [immersive, setImmersive] = useState(false);
 
-  const growth = RICE.lifecycle[stage]?.growth ?? 1;
-  const activeHotspot = RICE.hotspots.find((h) => h.id === hotspot);
+  const growth = crop.lifecycle[stage]?.growth ?? 1;
+  const activeHotspot = crop.hotspots.find((h) => h.id === hotspot);
 
   return (
     <main className="relative h-screen w-full overflow-hidden bg-background">
