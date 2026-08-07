@@ -102,12 +102,12 @@ function Lab() {
             <div className="pointer-events-auto">
               <p className="readout text-[10px] uppercase text-primary">3D Agriculture Lab</p>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">
-                {RICE.name}
+                {crop.name}
                 <span className="ml-3 text-base font-normal italic text-muted-foreground">
-                  {RICE.binomial}
+                  {crop.binomial}
                 </span>
               </h1>
-              <p className="mt-1 max-w-md text-sm text-muted-foreground">{RICE.tagline}</p>
+              <p className="mt-1 max-w-md text-sm text-muted-foreground">{crop.tagline}</p>
             </div>
             <nav className="pointer-events-auto flex items-center gap-2">
               <Link
@@ -159,15 +159,15 @@ function Lab() {
           <div className="pointer-events-none absolute inset-y-0 right-0 z-20 flex w-full max-w-full items-stretch p-4 md:w-auto">
             <AnimatePresence mode="wait">
               {panel === "taxonomy" && (
-                <TaxonomyPanel key="taxonomy" crop={RICE} onClose={() => setPanel(null)} />
+                <TaxonomyPanel key="taxonomy" crop={crop} onClose={() => setPanel(null)} />
               )}
               {panel === "conditions" && (
-                <ConditionsPanel key="conditions" crop={RICE} onClose={() => setPanel(null)} />
+                <ConditionsPanel key="conditions" crop={crop} onClose={() => setPanel(null)} />
               )}
               {panel === "cells" && (
                 <CellsPanel
                   key="cells"
-                  crop={RICE}
+                  crop={crop}
                   activeLayer={layer}
                   onLayer={setLayer}
                   onClose={() => setPanel(null)}
@@ -176,7 +176,7 @@ function Lab() {
               {panel === "lifecycle" && (
                 <LifecyclePanel
                   key="lifecycle"
-                  crop={RICE}
+                  crop={crop}
                   stage={stage}
                   onStage={setStage}
                   onClose={() => setPanel(null)}
