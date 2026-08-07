@@ -3,7 +3,7 @@ import { lazy, Suspense, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { Dna, Droplets, Expand, Layers, Minimize, Timer } from "lucide-react";
 
-import { RICE } from "@/lib/crops";
+import { getCrop, RICE } from "@/lib/crops";
 import {
   CellsPanel,
   ConditionsPanel,
@@ -15,6 +15,10 @@ import {
 const PaddyScene = lazy(() => import("@/components/lab/PaddyScene"));
 
 export const Route = createFileRoute("/lab")({
+  validateSearch: (search: Record<string, unknown>): { crop?: string } => {
+    const slug = typeof search.crop === "string" ? search.crop : undefined;
+    return slug && getCrop(slug) ? { crop: slug } : {};
+  },
   head: () => ({
     meta: [
       { title: "3D Agriculture Lab — Interactive Paddy Rice Model" },
