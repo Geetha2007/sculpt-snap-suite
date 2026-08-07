@@ -34,6 +34,7 @@ function CropShelf() {
         </p>
         <Link
           to="/lab"
+          search={{ crop: "rice" }}
           className="readout mt-6 inline-flex rounded-sm border border-primary/50 px-4 py-2.5 text-[10px] uppercase text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
         >
           Enter the 3D lab →
@@ -43,8 +44,8 @@ function CropShelf() {
           {CROPS.map((crop) => (
             <Link
               key={crop.slug}
-              to="/crops/$slug"
-              params={{ slug: crop.slug }}
+              to="/lab"
+              search={{ crop: crop.slug }}
               className="group relative flex h-64 flex-col justify-end overflow-hidden rounded-sm border border-border p-6 transition-colors hover:border-primary/60"
             >
               {crop.modeled ? (

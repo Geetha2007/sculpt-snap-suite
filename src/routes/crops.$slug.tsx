@@ -52,6 +52,7 @@ function CropDetail() {
         {crop.modeled ? (
           <Link
             to="/lab"
+            search={{ crop: crop.slug }}
             className="readout mt-7 inline-flex rounded-sm border border-primary/50 px-4 py-2.5 text-[10px] uppercase text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
           >
             Open in the 3D lab

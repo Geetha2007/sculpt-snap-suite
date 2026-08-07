@@ -1,9 +1,9 @@
 import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { Dna, Droplets, Expand, Layers, Minimize, Timer } from "lucide-react";
 
-import { RICE } from "@/lib/crops";
+import { getCrop, RICE } from "@/lib/crops";
 import {
   CellsPanel,
   ConditionsPanel,
@@ -15,22 +15,26 @@ import {
 const PaddyScene = lazy(() => import("@/components/lab/PaddyScene"));
 
 export const Route = createFileRoute("/lab")({
-  head: () => ({
-    meta: [
-      { title: "3D Agriculture Lab — Interactive Paddy Rice Model" },
-      {
-        name: "description",
-        content:
-          "Explore a real-time 3D model of Oryza sativa: taxonomy, growing conditions, leaf cell structure and a scrubbable lifecycle, in an immersive dark lab.",
-      },
-      { property: "og:title", content: "3D Agriculture Lab — Interactive Paddy Rice Model" },
-      {
-        property: "og:description",
-        content:
-          "Orbit a procedurally grown rice plant, open hotspots and scrub its lifecycle from germination to ripening.",
-      },
-    ],
-  }),
+  validateSearch: (search: Record<string, unknown>): { crop?: string } => {
+    const raw = search["crop"];
+    const slug = typeof raw === "string" ? raw : undefined;
+    return slug && getCrop(slug) ? { crop: slug } : {};
+  },
+  head: ({ match }) => {
+    const crop = getCrop(match.search.crop ?? "") ?? RICE;
+    const title = `${crop.name} in 3D — Agriculture Lab`;
+    const description = `Explore a real-time 3D specimen of ${crop.binomial}: taxonomy, growing conditions, leaf cell structure and a scrubbable lifecycle, in an immersive dark lab.`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+    };
+  },
   component: Lab,
 });
 
@@ -49,14 +53,22 @@ const HOTSPOT_PANEL: Record<string, PanelId> = {
 };
 
 function Lab() {
+  const { crop: slug } = Route.useSearch();
+  const crop = getCrop(slug ?? "") ?? RICE;
   const [panel, setPanel] = useState<PanelId | null>("taxonomy");
   const [hotspot, setHotspot] = useState<string | null>(null);
   const [layer, setLayer] = useState<string | null>(null);
-  const [stage, setStage] = useState(RICE.lifecycle.length - 1);
+  const [stage, setStage] = useState(crop.lifecycle.length - 1);
   const [immersive, setImmersive] = useState(false);
 
-  const growth = RICE.lifecycle[stage]?.growth ?? 1;
-  const activeHotspot = RICE.hotspots.find((h) => h.id === hotspot);
+  useEffect(() => {
+    setStage(crop.lifecycle.length - 1);
+    setHotspot(null);
+    setLayer(null);
+  }, [crop.slug, crop.lifecycle.length]);
+
+  const growth = crop.lifecycle[stage]?.growth ?? 1;
+  const activeHotspot = crop.hotspots.find((h) => h.id === hotspot);
 
   return (
     <main className="relative h-screen w-full overflow-hidden bg-background">
@@ -96,12 +108,17 @@ function Lab() {
             <div className="pointer-events-auto">
               <p className="readout text-[10px] uppercase text-primary">3D Agriculture Lab</p>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">
-                {RICE.name}
+                {crop.name}
                 <span className="ml-3 text-base font-normal italic text-muted-foreground">
-                  {RICE.binomial}
+                  {crop.binomial}
                 </span>
               </h1>
-              <p className="mt-1 max-w-md text-sm text-muted-foreground">{RICE.tagline}</p>
+              <p className="mt-1 max-w-md text-sm text-muted-foreground">{crop.tagline}</p>
+              {!crop.modeled && (
+                <p className="readout mt-2 inline-flex rounded-sm border border-grain/40 px-2 py-1 text-[10px] uppercase text-grain">
+                  Reference geometry — dedicated model in progress
+                </p>
+              )}
             </div>
             <nav className="pointer-events-auto flex items-center gap-2">
               <Link
@@ -153,15 +170,15 @@ function Lab() {
           <div className="pointer-events-none absolute inset-y-0 right-0 z-20 flex w-full max-w-full items-stretch p-4 md:w-auto">
             <AnimatePresence mode="wait">
               {panel === "taxonomy" && (
-                <TaxonomyPanel key="taxonomy" crop={RICE} onClose={() => setPanel(null)} />
+                <TaxonomyPanel key="taxonomy" crop={crop} onClose={() => setPanel(null)} />
               )}
               {panel === "conditions" && (
-                <ConditionsPanel key="conditions" crop={RICE} onClose={() => setPanel(null)} />
+                <ConditionsPanel key="conditions" crop={crop} onClose={() => setPanel(null)} />
               )}
               {panel === "cells" && (
                 <CellsPanel
                   key="cells"
-                  crop={RICE}
+                  crop={crop}
                   activeLayer={layer}
                   onLayer={setLayer}
                   onClose={() => setPanel(null)}
@@ -170,7 +187,7 @@ function Lab() {
               {panel === "lifecycle" && (
                 <LifecyclePanel
                   key="lifecycle"
-                  crop={RICE}
+                  crop={crop}
                   stage={stage}
                   onStage={setStage}
                   onClose={() => setPanel(null)}
