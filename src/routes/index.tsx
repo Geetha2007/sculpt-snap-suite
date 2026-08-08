@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import paddyAsset from "@/assets/paddy.jpg.asset.json";
+import wheatAsset from "@/assets/wheat.jpg.asset.json";
 import { CROPS } from "@/lib/crops";
 
 export const Route = createFileRoute("/")({
@@ -50,8 +51,8 @@ function CropShelf() {
             >
               {crop.modeled ? (
                 <img
-                  src={paddyAsset.url}
-                  alt="Paddy rice plant against a dark backdrop"
+                  src={crop.slug === "wheat" ? wheatAsset.url : paddyAsset.url}
+                  alt={`${crop.name} plant specimen`}
                   loading="lazy"
                   className="absolute inset-0 size-full object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
                 />

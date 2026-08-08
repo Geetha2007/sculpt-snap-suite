@@ -50,6 +50,9 @@ const HOTSPOT_PANEL: Record<string, PanelId> = {
   blade: "cells",
   culm: "taxonomy",
   roots: "conditions",
+  spike: "lifecycle",
+  awn: "conditions",
+  flagleaf: "cells",
 };
 
 function Lab() {
@@ -85,7 +88,7 @@ function Lab() {
           fallback={
             <div className="absolute inset-0 flex items-center justify-center">
               <p className="readout animate-pulse text-xs uppercase text-primary">
-                Growing Oryza sativa…
+                Growing {crop.binomial}…
               </p>
             </div>
           }
@@ -94,6 +97,8 @@ function Lab() {
             growth={growth}
             immersive={immersive}
             activeHotspot={hotspot}
+            species={crop.slug === "wheat" ? "wheat" : "rice"}
+            hotspots={crop.hotspots}
             onHotspot={(id) => {
               setHotspot(id);
               if (id) setPanel(HOTSPOT_PANEL[id] ?? "taxonomy");
