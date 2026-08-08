@@ -69,6 +69,20 @@ function Blades({ growth }: { growth: number }) {
 function Spikes({ growth }: { growth: number }) {
   const specs = useMemo(() => buildWheatSpikes(7, growth), [growth]);
   const group = useRef<THREE.Group>(null);
+  const awnObjects = useMemo(
+    () =>
+      specs.map((s) => {
+        const g = new THREE.Group();
+        const mat = new THREE.LineBasicMaterial({
+          color: new THREE.Color("#f2e2a8"),
+          transparent: true,
+          opacity: 0.75,
+        });
+        s.awns.forEach((geo) => g.add(new THREE.Line(geo, mat)));
+        return g;
+      }),
+    [specs],
+  );
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -87,12 +101,7 @@ function Spikes({ growth }: { growth: number }) {
             <meshStandardMaterial color="#b9c85f" roughness={0.7} />
           </mesh>
           <Spikelets items={s.spikelets} />
-          {s.awns.map((g, k) => (
-            <line key={k}>
-              <primitive object={g} attach="geometry" />
-              <lineBasicMaterial color="#f2e2a8" transparent opacity={0.75} />
-            </line>
-          ))}
+          <primitive object={awnObjects[i]!} />
         </group>
       ))}
     </group>
