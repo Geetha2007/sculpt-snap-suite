@@ -4,14 +4,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 import paddyAsset from "@/assets/paddy.jpg.asset.json";
+import wheatAsset from "@/assets/wheat.jpg.asset.json";
 import { RICE, type Hotspot } from "@/lib/crops";
 import { buildBlades, buildPanicles, makeRng } from "./paddy-model";
+import WheatPlant from "./WheatPlant";
 
 type SceneProps = {
   growth: number;
   immersive: boolean;
   activeHotspot: string | null;
   onHotspot: (id: string | null) => void;
+  species?: "rice" | "wheat";
+  hotspots?: Hotspot[];
 };
 
 function Blades({ growth }: { growth: number }) {
@@ -154,8 +158,8 @@ function Dust() {
   );
 }
 
-function Backdrop() {
-  const texture = useTexture(paddyAsset.url);
+function Backdrop({ url }: { url: string }) {
+  const texture = useTexture(url);
   return (
     <mesh position={[0, 2.1, -5.6]}>
       <planeGeometry args={[8.5, 4.78]} />
@@ -242,11 +246,19 @@ function Rig({
   return null;
 }
 
-function Stage({ growth, immersive, activeHotspot, onHotspot }: SceneProps) {
+function Stage({
+  growth,
+  immersive,
+  activeHotspot,
+  onHotspot,
+  species = "rice",
+  hotspots = RICE.hotspots,
+}: SceneProps) {
   const focus = useMemo(() => {
-    const h = RICE.hotspots.find((x) => x.id === activeHotspot);
+    const h = hotspots.find((x) => x.id === activeHotspot);
     return h ? h.position : null;
-  }, [activeHotspot]);
+  }, [activeHotspot, hotspots]);
+  const isWheat = species === "wheat";
 
   return (
     <>
@@ -257,15 +269,21 @@ function Stage({ growth, immersive, activeHotspot, onHotspot }: SceneProps) {
       <directionalLight position={[-5, 3, -4]} intensity={1.1} color="#4fe08a" />
       <pointLight position={[0, 1.4, 2.4]} intensity={6} distance={9} color="#a6f04f" />
 
-      <Backdrop />
+      <Backdrop url={isWheat ? wheatAsset.url : paddyAsset.url} />
       <Dust />
 
       <group position={[-0.5, -1.05, 0]}>
-        <Culms growth={growth} />
-        <Blades growth={growth} />
-        <Panicles growth={growth} />
+        {isWheat ? (
+          <WheatPlant growth={growth} />
+        ) : (
+          <>
+            <Culms growth={growth} />
+            <Blades growth={growth} />
+            <Panicles growth={growth} />
+          </>
+        )}
         <Hotspots
-          hotspots={RICE.hotspots}
+          hotspots={hotspots}
           active={activeHotspot}
           onHotspot={onHotspot}
           hidden={immersive}
