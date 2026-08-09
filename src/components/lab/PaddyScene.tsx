@@ -5,16 +5,32 @@ import * as THREE from "three";
 
 import paddyAsset from "@/assets/paddy.jpg.asset.json";
 import wheatAsset from "@/assets/wheat.jpg.asset.json";
+import maizeAsset from "@/assets/maize.png.asset.json";
+import soybeanAsset from "@/assets/soybean.png.asset.json";
+import sugarcaneAsset from "@/assets/sugarcan.png.asset.json";
 import { RICE, type Hotspot } from "@/lib/crops";
 import { buildBlades, buildPanicles, makeRng } from "./paddy-model";
 import WheatPlant from "./WheatPlant";
+import MaizePlant from "./MaizePlant";
+import SoybeanPlant from "./SoybeanPlant";
+import SugarcanePlant from "./SugarcanePlant";
+
+export type Species = "rice" | "wheat" | "maize" | "soybean" | "sugarcane";
+
+const BACKDROPS: Record<Species, string> = {
+  rice: paddyAsset.url,
+  wheat: wheatAsset.url,
+  maize: maizeAsset.url,
+  soybean: soybeanAsset.url,
+  sugarcane: sugarcaneAsset.url,
+};
 
 type SceneProps = {
   growth: number;
   immersive: boolean;
   activeHotspot: string | null;
   onHotspot: (id: string | null) => void;
-  species?: "rice" | "wheat";
+  species?: Species;
   hotspots?: Hotspot[];
 };
 
@@ -258,7 +274,7 @@ function Stage({
     const h = hotspots.find((x) => x.id === activeHotspot);
     return h ? h.position : null;
   }, [activeHotspot, hotspots]);
-  const isWheat = species === "wheat";
+
 
   return (
     <>
@@ -269,12 +285,18 @@ function Stage({
       <directionalLight position={[-5, 3, -4]} intensity={1.1} color="#4fe08a" />
       <pointLight position={[0, 1.4, 2.4]} intensity={6} distance={9} color="#a6f04f" />
 
-      <Backdrop url={isWheat ? wheatAsset.url : paddyAsset.url} />
+      <Backdrop url={BACKDROPS[species] ?? paddyAsset.url} />
       <Dust />
 
       <group position={[-0.5, -1.05, 0]}>
-        {isWheat ? (
+        {species === "wheat" ? (
           <WheatPlant growth={growth} />
+        ) : species === "maize" ? (
+          <MaizePlant growth={growth} />
+        ) : species === "soybean" ? (
+          <SoybeanPlant growth={growth} />
+        ) : species === "sugarcane" ? (
+          <SugarcanePlant growth={growth} />
         ) : (
           <>
             <Culms growth={growth} />

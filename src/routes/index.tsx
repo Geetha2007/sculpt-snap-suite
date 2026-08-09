@@ -2,6 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import paddyAsset from "@/assets/paddy.jpg.asset.json";
 import wheatAsset from "@/assets/wheat.jpg.asset.json";
+import maizeAsset from "@/assets/maize.png.asset.json";
+import soybeanAsset from "@/assets/soybean.png.asset.json";
+import sugarcaneAsset from "@/assets/sugarcan.png.asset.json";
+
+const SHELF_IMAGE: Record<string, string> = {
+  rice: paddyAsset.url,
+  wheat: wheatAsset.url,
+  maize: maizeAsset.url,
+  soybean: soybeanAsset.url,
+  sugarcane: sugarcaneAsset.url,
+};
 import { CROPS } from "@/lib/crops";
 
 export const Route = createFileRoute("/")({
@@ -51,7 +62,7 @@ function CropShelf() {
             >
               {crop.modeled ? (
                 <img
-                  src={crop.slug === "wheat" ? wheatAsset.url : paddyAsset.url}
+                  src={SHELF_IMAGE[crop.slug] ?? paddyAsset.url}
                   alt={`${crop.name} plant specimen`}
                   loading="lazy"
                   className="absolute inset-0 size-full object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
