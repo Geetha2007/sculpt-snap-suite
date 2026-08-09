@@ -4,6 +4,7 @@ import { AnimatePresence } from "motion/react";
 import { Dna, Droplets, Expand, Layers, Minimize, Timer } from "lucide-react";
 
 import { getCrop, RICE } from "@/lib/crops";
+import type { Species } from "@/components/lab/PaddyScene";
 import {
   CellsPanel,
   ConditionsPanel,
@@ -53,6 +54,18 @@ const HOTSPOT_PANEL: Record<string, PanelId> = {
   spike: "lifecycle",
   awn: "conditions",
   flagleaf: "cells",
+  tassel: "lifecycle",
+  ear: "lifecycle",
+  stalk: "taxonomy",
+  brace: "conditions",
+  pod: "lifecycle",
+  trifoliate: "cells",
+  nodule: "conditions",
+  flower: "lifecycle",
+  cane: "taxonomy",
+  internode: "cells",
+  fan: "conditions",
+  stool: "conditions",
 };
 
 function Lab() {
@@ -97,7 +110,7 @@ function Lab() {
             growth={growth}
             immersive={immersive}
             activeHotspot={hotspot}
-            species={crop.slug === "wheat" ? "wheat" : "rice"}
+            species={crop.slug as Species}
             hotspots={crop.hotspots}
             onHotspot={(id) => {
               setHotspot(id);
