@@ -96,20 +96,6 @@ function Ear({ y, yaw, growth }: { y: number; yaw: number; growth: number }) {
     return { out, len };
   }, [growth]);
 
-  const mesh = useRef<THREE.InstancedMesh>(null);
-  useMemo(() => {
-    const m = mesh.current;
-    if (!m) return;
-    const d = new THREE.Object3D();
-    kernels.out.forEach((k, i) => {
-      d.position.copy(k.pos);
-      d.scale.setScalar(0.021 * k.s);
-      d.updateMatrix();
-      m.setMatrixAt(i, d.matrix);
-    });
-    m.instanceMatrix.needsUpdate = true;
-  }, [kernels]);
-
   const silk = useMemo(() => {
     const rng = makeRng(19);
     const g = new THREE.Group();
@@ -134,7 +120,6 @@ function Ear({ y, yaw, growth }: { y: number; yaw: number; growth: number }) {
     <group position={[0.09, y, 0]} rotation={[0, yaw, -0.25]}>
       <instancedMesh
         ref={(r) => {
-          mesh.current = r;
           if (!r) return;
           const d = new THREE.Object3D();
           kernels.out.forEach((k, i) => {
