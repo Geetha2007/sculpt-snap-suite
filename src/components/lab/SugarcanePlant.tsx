@@ -93,8 +93,8 @@ export default function SugarcanePlant({ growth }: { growth: number }) {
       {canes.map((c, i) => (
         <CaneStalk key={i} cane={c} growth={growth} />
       ))}
-      <mesh position={[0, 0.04, 0]}>
-        <sphereGeometry args={[0.4, 16, 10]} />
+      <mesh position={[0, 0.02, 0]} scale={[1, 0.28, 1]}>
+        <sphereGeometry args={[0.34, 16, 10]} />
         <meshStandardMaterial color="#5a4326" roughness={0.95} />
       </mesh>
     </group>
