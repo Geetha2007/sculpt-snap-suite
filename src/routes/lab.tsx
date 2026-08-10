@@ -1,13 +1,14 @@
 import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { AnimatePresence } from "motion/react";
-import { Dna, Droplets, Expand, Layers, Minimize, Timer } from "lucide-react";
+import { Dna, Droplets, Expand, FlaskConical, Layers, Minimize, Timer } from "lucide-react";
 
 import { getCrop, RICE } from "@/lib/crops";
 import type { Species } from "@/components/lab/PaddyScene";
 import {
   CellsPanel,
   ConditionsPanel,
+  FeedingPanel,
   LifecyclePanel,
   TaxonomyPanel,
   type PanelId,
@@ -44,6 +45,7 @@ const TOOLS: { id: PanelId; label: string; icon: typeof Dna }[] = [
   { id: "conditions", label: "Conditions", icon: Droplets },
   { id: "cells", label: "Cell structure", icon: Layers },
   { id: "lifecycle", label: "Lifecycle", icon: Timer },
+  { id: "feeding", label: "Feeding schedule", icon: FlaskConical },
 ];
 
 const HOTSPOT_PANEL: Record<string, PanelId> = {
@@ -205,6 +207,15 @@ function Lab() {
               {panel === "lifecycle" && (
                 <LifecyclePanel
                   key="lifecycle"
+                  crop={crop}
+                  stage={stage}
+                  onStage={setStage}
+                  onClose={() => setPanel(null)}
+                />
+              )}
+              {panel === "feeding" && (
+                <FeedingPanel
+                  key="feeding"
                   crop={crop}
                   stage={stage}
                   onStage={setStage}
