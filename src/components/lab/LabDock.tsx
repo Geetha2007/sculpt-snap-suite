@@ -3,11 +3,11 @@ import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { Pause, Play, RotateCcw, X } from "lucide-react";
 
-import type { Crop } from "@/lib/crops";
+import { getFeeding, type Crop } from "@/lib/crops";
 
 const CellScene = lazy(() => import("./CellScene"));
 
-export type PanelId = "taxonomy" | "conditions" | "cells" | "lifecycle";
+export type PanelId = "taxonomy" | "conditions" | "cells" | "lifecycle" | "feeding";
 
 function PanelShell({
   title,
