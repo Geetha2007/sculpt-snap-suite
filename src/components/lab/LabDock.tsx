@@ -3,11 +3,11 @@ import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { Pause, Play, RotateCcw, X } from "lucide-react";
 
-import type { Crop } from "@/lib/crops";
+import { getFeeding, type Crop } from "@/lib/crops";
 
 const CellScene = lazy(() => import("./CellScene"));
 
-export type PanelId = "taxonomy" | "conditions" | "cells" | "lifecycle";
+export type PanelId = "taxonomy" | "conditions" | "cells" | "lifecycle" | "feeding";
 
 function PanelShell({
   title,
@@ -238,7 +238,94 @@ export function LifecyclePanel({
           </p>
           <h3 className="mt-1 text-base font-semibold">{current.name}</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{current.note}</p>
+          {(() => {
+            const feed = getFeeding(crop.slug).find((f) => f.stageId === current.id);
+            if (!feed) return null;
+            return (
+              <div className="mt-3 border-t border-border pt-3">
+                <p className="readout text-[10px] uppercase text-primary">Feeding now</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  <span className="text-foreground">Water:</span> {feed.water} ·{" "}
+                  <span className="text-foreground">Feed:</span> {feed.nutrients} ({feed.dose})
+                </p>
+              </div>
+            );
+          })()}
         </div>
+      )}
+    </PanelShell>
+  );
+}
+
+export function FeedingPanel({
+  crop,
+  stage,
+  onStage,
+  onClose,
+}: {
+  crop: Crop;
+  stage: number;
+  onStage: (i: number) => void;
+  onClose: () => void;
+}) {
+  const steps = getFeeding(crop.slug);
+  const currentId = crop.lifecycle[stage]?.id;
+
+  return (
+    <PanelShell
+      title="Data feeding schedule"
+      subtitle="Nutrition & irrigation by growth stage"
+      onClose={onClose}
+    >
+      {steps.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          No feeding schedule recorded for this specimen yet.
+        </p>
+      ) : (
+        <ol className="space-y-3">
+          {steps.map((f) => {
+            const index = crop.lifecycle.findIndex((s) => s.id === f.stageId);
+            const active = f.stageId === currentId;
+            return (
+              <li key={f.stageId}>
+                <button
+                  onClick={() => index >= 0 && onStage(index)}
+                  className={`w-full rounded-sm border px-4 py-3 text-left transition-colors ${
+                    active ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-semibold">{f.stage}</span>
+                    <span className="readout text-[9px] uppercase text-muted-foreground">
+                      {crop.lifecycle[index]?.days ?? ""}
+                    </span>
+                  </div>
+                  <dl className="mt-2 space-y-1 text-xs">
+                    <div className="flex gap-2">
+                      <dt className="readout w-16 shrink-0 uppercase text-[9px] text-muted-foreground">
+                        Water
+                      </dt>
+                      <dd className="text-muted-foreground">{f.water}</dd>
+                    </div>
+                    <div className="flex gap-2">
+                      <dt className="readout w-16 shrink-0 uppercase text-[9px] text-muted-foreground">
+                        Feed
+                      </dt>
+                      <dd className="text-muted-foreground">{f.nutrients}</dd>
+                    </div>
+                    <div className="flex gap-2">
+                      <dt className="readout w-16 shrink-0 uppercase text-[9px] text-muted-foreground">
+                        Dose
+                      </dt>
+                      <dd className="text-primary">{f.dose}</dd>
+                    </div>
+                  </dl>
+                  <p className="mt-2 text-xs leading-relaxed text-grain/90">{f.tip}</p>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
       )}
     </PanelShell>
   );

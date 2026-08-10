@@ -304,3 +304,55 @@ export function getCrop(slug: string): Crop | undefined {
 }
 
 export const RICE = CROPS[0]!;
+/** Stage-by-stage feeding (nutrition + water) schedule for a crop. */
+export type FeedStep = {
+  /** matches a LifecycleStage id */
+  stageId: string;
+  stage: string;
+  water: string;
+  nutrients: string;
+  dose: string;
+  tip: string;
+};
+
+export const FEEDING: Record<string, FeedStep[]> = {
+  rice: [
+    { stageId: "germination", stage: "Germination", water: "Saturated, 2-3 cm film", nutrients: "Basal N-P-K + Zn", dose: "40 kg N, 60 kg P₂O₅, 40 kg K₂O /ha", tip: "Incorporate the basal dose into puddled mud before transplanting." },
+    { stageId: "tillering", stage: "Tillering", water: "5 cm standing water", nutrients: "First N top-dress", dose: "30 kg N /ha as urea", tip: "Drain shallowly before broadcasting urea, then re-flood within a day." },
+    { stageId: "initiation", stage: "Panicle initiation", water: "5-7 cm standing water", nutrients: "Second N + K", dose: "30 kg N, 20 kg K₂O /ha", tip: "The most yield-sensitive dose — it sets spikelet number per panicle." },
+    { stageId: "flowering", stage: "Flowering", water: "Keep 5 cm, never dry", nutrients: "Foliar K / micronutrients", dose: "2% KCl spray if leaves pale", tip: "Water stress at anthesis causes the highest sterility of the whole season." },
+    { stageId: "ripening", stage: "Ripening", water: "Drain 10-14 days before harvest", nutrients: "None", dose: "—", tip: "Late nitrogen delays maturity and invites lodging and neck blast." },
+  ],
+  wheat: [
+    { stageId: "germination", stage: "Germination", water: "Pre-sow irrigation (CRI at day 21)", nutrients: "Basal N-P-K", dose: "60 kg N, 60 kg P₂O₅, 40 kg K₂O /ha", tip: "The crown-root irrigation is the single most critical watering for wheat." },
+    { stageId: "tillering", stage: "Tillering", water: "Irrigate day 40-45", nutrients: "First N top-dress", dose: "40 kg N /ha", tip: "Feed with the irrigation so nitrogen moves into the crown root zone." },
+    { stageId: "jointing", stage: "Stem elongation", water: "Irrigate day 65-70", nutrients: "Second N + S", dose: "30 kg N, 20 kg S /ha", tip: "Sulphur here lifts grain protein and baking quality." },
+    { stageId: "heading", stage: "Heading & anthesis", water: "Irrigate at flowering", nutrients: "Foliar micronutrients", dose: "0.5% ZnSO₄ + 2% urea spray", tip: "Avoid heavy nitrogen now — it delays ripening and softens the straw." },
+    { stageId: "ripening", stage: "Ripening", water: "One light dough-stage irrigation", nutrients: "None", dose: "—", tip: "Stop water 10-12 days before harvest so kernels harden evenly." },
+  ],
+  maize: [
+    { stageId: "ve", stage: "Emergence (VE)", water: "Moist seedbed, light irrigation", nutrients: "Starter N-P + Zn", dose: "40 kg N, 60 kg P₂O₅, 25 kg ZnSO₄ /ha", tip: "Band the starter 5 cm beside and below the seed, never on it." },
+    { stageId: "v6", stage: "Vegetative (V6-V10)", water: "25-35 mm per week", nutrients: "Main N side-dress + K", dose: "60 kg N, 40 kg K₂O /ha", tip: "V6-V8 is peak demand; late side-dressing cannot recover lost kernel rows." },
+    { stageId: "vt", stage: "Tasseling (VT)", water: "No stress — 40 mm per week", nutrients: "Final N split", dose: "30 kg N /ha", tip: "Drought during silking is the biggest single yield killer in maize." },
+    { stageId: "r3", stage: "Milk stage (R3)", water: "Steady moisture", nutrients: "Foliar K / B if deficient", dose: "1% KNO₃ spray", tip: "Keep the ear leaf green — it supplies most of the kernel's starch." },
+    { stageId: "r6", stage: "Maturity (R6)", water: "Taper off", nutrients: "None", dose: "—", tip: "Stop irrigating once the black layer forms; extra water only slows drydown." },
+  ],
+  soybean: [
+    { stageId: "ve", stage: "Emergence (VE)", water: "Moist, well-drained seedbed", nutrients: "Rhizobium inoculant + starter P", dose: "Seed inoculation, 60 kg P₂O₅ /ha", tip: "Inoculate every seed lot — fixation, not fertiliser, supplies most nitrogen." },
+    { stageId: "v3", stage: "Vegetative (V3-V6)", water: "20-25 mm per week", nutrients: "P-K + Mo, minimal N", dose: "40 kg K₂O /ha, 0.5 kg Mo /ha", tip: "Heavy nitrogen now shuts down nodulation — keep it low on purpose." },
+    { stageId: "r1", stage: "Flowering (R1-R2)", water: "30 mm per week", nutrients: "Sulphur + boron", dose: "20 kg S, 1 kg B /ha", tip: "Boron reduces flower abortion and improves pod set." },
+    { stageId: "r4", stage: "Pod fill (R4-R5)", water: "Peak demand, 35-40 mm per week", nutrients: "Foliar N-P-K rescue", dose: "2% urea + 1% KNO₃ spray", tip: "Pod fill is when irrigation pays back most; drought here shrinks seed size." },
+    { stageId: "r8", stage: "Maturity (R8)", water: "Dry down", nutrients: "None", dose: "—", tip: "Withhold water at leaf drop to keep pods from shattering unevenly." },
+  ],
+  sugarcane: [
+    { stageId: "germination", stage: "Sett germination", water: "Light irrigation every 7-10 days", nutrients: "Basal P-K + N starter", dose: "50 kg N, 80 kg P₂O₅, 60 kg K₂O /ha", tip: "Keep setts moist but never waterlogged or the buds rot before sprouting." },
+    { stageId: "tillering", stage: "Tillering", water: "Irrigate every 10 days", nutrients: "First N split + earthing up", dose: "80 kg N /ha", tip: "Feed and earth up together so new tillers root into fertilised soil." },
+    { stageId: "grand", stage: "Grand growth", water: "Heaviest demand — every 7 days", nutrients: "Second N + K, Fe/Zn foliar", dose: "120 kg N, 60 kg K₂O /ha", tip: "70% of the season's water and nitrogen is used in this phase alone." },
+    { stageId: "ripening", stage: "Ripening", water: "Stretch intervals to 20 days", nutrients: "Stop nitrogen", dose: "—", tip: "Mild moisture stress now pushes sucrose accumulation up the cane." },
+    { stageId: "arrowing", stage: "Maturity / arrowing", water: "Withhold 3-4 weeks pre-harvest", nutrients: "None", dose: "—", tip: "Late nitrogen or water keeps the cane green and cuts recoverable sugar." },
+  ],
+};
+
+export function getFeeding(slug: string): FeedStep[] {
+  return FEEDING[slug] ?? [];
+}
