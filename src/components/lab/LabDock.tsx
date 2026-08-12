@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { Pause, Play, RotateCcw, X } from "lucide-react";
+import { Pause, Pencil, Play, RotateCcw, X } from "lucide-react";
 
-import { getFeeding, type Crop } from "@/lib/crops";
+import type { Crop } from "@/lib/crops";
+import { useFeedActions, useFeedingSchedule } from "@/lib/feeding-store";
 
 const CellScene = lazy(() => import("./CellScene"));
 
@@ -151,6 +152,7 @@ export function LifecyclePanel({
   const current = crop.lifecycle[stage];
   const last = crop.lifecycle.length - 1;
   const [playing, setPlaying] = useState(false);
+  const { steps: feedSteps } = useFeedingSchedule(crop.slug);
 
   useEffect(() => {
     if (!playing) return;
@@ -239,7 +241,7 @@ export function LifecyclePanel({
           <h3 className="mt-1 text-base font-semibold">{current.name}</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{current.note}</p>
           {(() => {
-            const feed = getFeeding(crop.slug).find((f) => f.stageId === current.id);
+            const feed = feedSteps.find((f) => f.stageId === current.id);
             if (!feed) return null;
             return (
               <div className="mt-3 border-t border-border pt-3">
@@ -268,8 +270,30 @@ export function FeedingPanel({
   onStage: (i: number) => void;
   onClose: () => void;
 }) {
-  const steps = getFeeding(crop.slug);
+  const { steps, edited } = useFeedingSchedule(crop.slug);
+  const { update, reset } = useFeedActions(crop.slug);
+  const [editing, setEditing] = useState(false);
   const currentId = crop.lifecycle[stage]?.id;
+
+  const field = (label: string, value: string, onChange: (v: string) => void, area = false) => (
+    <label className="block">
+      <span className="readout block text-[9px] uppercase text-muted-foreground">{label}</span>
+      {area ? (
+        <textarea
+          value={value}
+          rows={2}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-1 w-full resize-none rounded-sm border border-border bg-background/60 px-2 py-1.5 text-xs leading-relaxed outline-none focus:border-primary"
+        />
+      ) : (
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-1 w-full rounded-sm border border-border bg-background/60 px-2 py-1.5 text-xs outline-none focus:border-primary"
+        />
+      )}
+    </label>
+  );
 
   return (
     <PanelShell
@@ -277,6 +301,31 @@ export function FeedingPanel({
       subtitle="Nutrition & irrigation by growth stage"
       onClose={onClose}
     >
+      {steps.length > 0 && (
+        <div className="mb-4 flex items-center gap-2">
+          <button
+            onClick={() => setEditing((e) => !e)}
+            className={`readout flex items-center gap-2 rounded-sm border px-3 py-2 text-[10px] uppercase transition-colors ${
+              editing
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground"
+            }`}
+          >
+            <Pencil className="size-3" /> {editing ? "Done editing" : "Edit schedule"}
+          </button>
+          {edited && (
+            <button
+              onClick={reset}
+              className="readout flex items-center gap-2 rounded-sm border border-border px-3 py-2 text-[10px] uppercase text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              <RotateCcw className="size-3" /> Restore defaults
+            </button>
+          )}
+        </div>
+      )}
+      {edited && (
+        <p className="readout mb-3 text-[9px] uppercase text-grain">Custom values saved on this device</p>
+      )}
       {steps.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           No feeding schedule recorded for this specimen yet.
@@ -286,6 +335,27 @@ export function FeedingPanel({
           {steps.map((f) => {
             const index = crop.lifecycle.findIndex((s) => s.id === f.stageId);
             const active = f.stageId === currentId;
+            if (editing) {
+              return (
+                <li
+                  key={f.stageId}
+                  className={`rounded-sm border px-4 py-3 ${active ? "border-primary bg-primary/10" : "border-border"}`}
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-semibold">{f.stage}</span>
+                    <span className="readout text-[9px] uppercase text-muted-foreground">
+                      {crop.lifecycle[index]?.days ?? ""}
+                    </span>
+                  </div>
+                  <div className="mt-2 space-y-2">
+                    {field("Water", f.water, (v) => update(f.stageId, { water: v }))}
+                    {field("Feed", f.nutrients, (v) => update(f.stageId, { nutrients: v }))}
+                    {field("Dose", f.dose, (v) => update(f.stageId, { dose: v }))}
+                    {field("Tip", f.tip, (v) => update(f.stageId, { tip: v }), true)}
+                  </div>
+                </li>
+              );
+            }
             return (
               <li key={f.stageId}>
                 <button
