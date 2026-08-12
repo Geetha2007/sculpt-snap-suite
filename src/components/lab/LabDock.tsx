@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { Pause, Play, RotateCcw, X } from "lucide-react";
+import { Pause, Pencil, Play, RotateCcw, X } from "lucide-react";
 
-import { getFeeding, type Crop } from "@/lib/crops";
+import type { Crop } from "@/lib/crops";
+import { useFeedActions, useFeedingSchedule } from "@/lib/feeding-store";
 
 const CellScene = lazy(() => import("./CellScene"));
 
