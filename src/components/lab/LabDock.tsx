@@ -152,6 +152,7 @@ export function LifecyclePanel({
   const current = crop.lifecycle[stage];
   const last = crop.lifecycle.length - 1;
   const [playing, setPlaying] = useState(false);
+  const { steps: feedSteps } = useFeedingSchedule(crop.slug);
 
   useEffect(() => {
     if (!playing) return;
@@ -240,7 +241,7 @@ export function LifecyclePanel({
           <h3 className="mt-1 text-base font-semibold">{current.name}</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{current.note}</p>
           {(() => {
-            const feed = getFeeding(crop.slug).find((f) => f.stageId === current.id);
+            const feed = feedSteps.find((f) => f.stageId === current.id);
             if (!feed) return null;
             return (
               <div className="mt-3 border-t border-border pt-3">
