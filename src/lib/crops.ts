@@ -98,7 +98,7 @@ export const CROPS: Crop[] = [
       { id: "panicle", label: "Panicle", position: [0.55, 2.15, 0.25], blurb: "Branched flowering head carrying 80-150 spikelets. Bends over as grains fill." },
       { id: "blade", label: "Leaf blade", position: [-0.95, 1.35, 0.35], blurb: "Long lanceolate blade with a prominent midrib and a ligule at the sheath junction." },
       { id: "culm", label: "Culm", position: [0.12, 0.75, 0.3], blurb: "Hollow jointed stem. Internodes elongate rapidly to keep leaves above rising water." },
-      { id: "roots", label: "Root zone", position: [0.05, 0.05, 0.45], blurb: "Shallow fibrous mat in saturated mud, ventilated internally by aerenchyma." },
+      { id: "roots", label: "Fibrous root system", position: [0.12, -0.62, 0.62], blurb: "Adventitious nodal roots form a dense fibrous system with fine laterals and root hairs in saturated, oxygen-poor paddy soil." },
     ],
   },
   {
